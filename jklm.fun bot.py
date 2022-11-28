@@ -36,6 +36,7 @@ def searchWord(dictionary, word, max, mode):
     return wordsList
 
 auto = True
+autoTime = 0.75
 autoSlow = True
 maxWords = 30
 rows = 3
@@ -89,26 +90,24 @@ while True:
             driver.switch_to.frame(driver.find_element(By.XPATH, xpath_iframe))
             localName = localstorage["nickname"]
             currentPlayer = driver.find_element(By.XPATH, xpath_currentPlayer).get_attribute("textContent")
-            # execute word = driver.find_element(By.XPATH, xpath_word).text asynchronusly
-            word = driver.execute_script(f"return document.querySelector('/html/body/div[2]/div[2]/div[2]/div[2]/div').textContent")
-            while currentPlayer == localName and currentPlayer != "":
+            word = driver.find_element(By.XPATH, xpath_word).text
+            while currentPlayer == localName:
                 os.system("cls")
                 print(f"{Fore.BLUE}You are in auto mode\n")
-                print(f"Your name: {Fore.GREEN}{localName}")
-                print(f"Current player: {Fore.RED}{currentPlayer}")
                 print(f"\nCurrent word: {Fore.BLUE}{word}")
                 wordList = searchWord(dictionary, word, maxWords, auto)
                 pickedWord = random.choice(wordList)
                 print(f"Picked: {Fore.YELLOW}{pickedWord}")
-                time.sleep(0.6)
+                time.sleep(autoTime)
                 if autoSlow == True:
                     for i in pickedWord:
                         driver.find_element(By.XPATH, xpath_input).send_keys(i)
-                        numbertest = random.uniform(0.05, 0.2)
+                        numbertest = random.uniform(0, 0.13)
                         time.sleep(numbertest)
                 else:
                     driver.find_element(By.XPATH, xpath_input).send_keys(pickedWord)
                 driver.find_element(By.XPATH, xpath_input).send_keys(Keys.ENTER)
                 currentPlayer = driver.find_element(By.XPATH, xpath_currentPlayer).text
+                word = driver.find_element(By.XPATH, xpath_word).text
         except:
             pass
