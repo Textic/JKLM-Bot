@@ -1,2 +1,2 @@
 # JKLM-Bot
-jklm.fun bot created with selenium and python
+jklm.fun bot created with node.js and puppeteer
