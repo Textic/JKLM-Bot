@@ -4,19 +4,26 @@ import prompts from 'prompts';
 import axios from 'axios';
 import random from 'random';
 import fs from 'fs';
-if (!fs.existsSync('./settings.json')) {
-    fs.writeFileSync('./settings.json', JSON.stringify({
-        "nickname": "JhonDoe",
-        "headless": true,
-        "autoMode": false,
-        "language": "spanish",
-        "max": 30,
-        "row": 5
-    }, null, 4));
-    console.log('settings.json created with default settings, restarting...');
-    process.exit(1);
-}
-import settings from './settings.json' assert { type: "json" };
+
+await import('./settings.json', {assert: {type: "json"}}).then(module => {
+    global.settings = module.default;
+}).catch(err=> {
+    if (err.code == 'ERR_MODULE_NOT_FOUND') {
+        fs.writeFileSync('./settings.json', JSON.stringify({
+            "nickname": "JhonDoe",
+            "headless": true,
+            "autoMode": false,
+            "language": "spanish",
+            "max": 30,
+            "row": 5
+        }, null, 4));
+        console.log('settings.json created with default settings, exiting...');
+        process.exit(1);
+    } else {
+        console.error(err);
+        process.exit(1);
+    }
+})
 
 var dict = [];
 var wordsList = [];
