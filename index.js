@@ -18,18 +18,6 @@ if (!fs.existsSync('./settings.json')) {
 }
 import settings from './settings.json' assert { type: "json" };
 
-// {
-//     "nickname": "NoGuest123",
-//     "headless": true,
-//     "autoMode": true,
-//     "language": "spanish",
-//     "max": 30,
-//     "row": 5
-// }
-
-
-
-// settings.json
 var dict = [];
 var wordsList = [];
 var word = '';
