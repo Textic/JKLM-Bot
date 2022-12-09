@@ -1,6 +1,6 @@
 import pickRandom from 'pick-random';
 
-function searchWord(dictionary, word, max, mode) {
+function searchWord(dictionary: Array<string>, word: string, max: number, mode:boolean) {
     var wordsList = [];
     for (var i = 0; i < dictionary.length; i++) {
         if (dictionary[i].includes(word.toLowerCase())) {

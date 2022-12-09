@@ -1,15 +1,26 @@
 import { searchWord } from './functions.js';
+import { Settings } from './interfaces.js';
 import puppeteer from 'puppeteer-core';
 import prompts from 'prompts';
 import axios from 'axios';
 import random from 'random';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-await import('./settings.json', {assert: {type: "json"}}).then(module => {
-    global.settings = module.default;
+var settings: Settings;
+var dict: Array<string> = [];
+var wordsList: Array<string> = [];
+var lastWord: string = '';
+var currentPlayer: any;
+var word: any;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+await import('./settings.json'!, {assert: {type: "json"}}).then(module => {
+    settings = module.default;
 }).catch(err=> {
     if (err.code == 'ERR_MODULE_NOT_FOUND') {
-        fs.writeFileSync('./settings.json', JSON.stringify({
+        fs.writeFileSync(__dirname + '/settings.json', JSON.stringify({
             "nickname": "JhonDoe",
             "headless": true,
             "autoMode": false,
@@ -23,13 +34,7 @@ await import('./settings.json', {assert: {type: "json"}}).then(module => {
         console.error(err);
         process.exit(1);
     }
-})
-
-var dict = [];
-var wordsList = [];
-var word = '';
-var lastWord = '';
-var currentPlayer = '';
+});
 
 console.clear();
 console.log('Getting dictionary...');
@@ -69,19 +74,19 @@ async function main() {
     await page.waitForSelector('iframe');
     console.clear();
     const elementHandle = await page.$('iframe');
-    const frame = await elementHandle.contentFrame();
+    const frame = await elementHandle?.contentFrame();
     console.log('Waiting for text...');
-    await frame.waitForSelector('.syllable');
+    await frame?.waitForSelector('.syllable');
     console.clear();
     console.log('Game started!');
     if (!settings.autoMode) {
         while (true) {
-            word = await frame.$eval('.syllable', el => el.innerText);
+            word = await frame?.$eval('.syllable', el => (el as HTMLElement).innerText);
             if (word != lastWord && word != '') {
                 console.clear();
                 console.log('\x1b[38;2;0;255;255mWords:');
                 lastWord = word;
-                wordsList = searchWord(dict, word, settings.max, settings.mode);
+                wordsList = searchWord(dict, word, settings.max, settings.autoMode);
                 for (var i = 0; i < wordsList.length; i++) {
                     if (i % settings.row == 0) {
                         console.log('');
@@ -93,16 +98,16 @@ async function main() {
     } else if (settings.autoMode) {
         console.clear();
         console.log('\x1b[31mAuto mode enabled!');
-        var joinBtn = await frame.$('.joinRound');
-        var input = await frame.$('.styled');
+        var joinBtn = await frame?.$('.joinRound');
+        var input = await frame?.$('.styled');
         while (true) {
-            currentPlayer = await frame.$eval('.player', el => el.innerText);
-            try { await joinBtn.click() } catch (err) {}
+            currentPlayer = await frame?.$eval('.player', el => (el as HTMLElement).innerText);
+            try { await joinBtn?.click() } catch (err) {}
             if (currentPlayer == settings.nickname) {
-                word = await frame.$eval('.syllable', el => el.innerText);
-                wordsList = searchWord(dict, word, settings.max, settings.mode);
-                await input.type(random.choice(wordsList));
-                await input.press('Enter');
+                word = await frame?.$eval('.syllable', el => (el as HTMLElement).innerText);
+                wordsList = searchWord(dict, word, settings.max, settings.autoMode);
+                await input?.type(random.choice(wordsList));
+                await input?.press('Enter');
             }
         }
     } else {

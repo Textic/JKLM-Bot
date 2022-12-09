@@ -25,5 +25,13 @@
     "prompts": "^2.4.2",
     "puppeteer": "^19.3.0",
     "random": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/prompts": "^2.4.2"
+  },
+  "nodemonConfig": {
+    "execMap": {
+      "ts": "ts-node-esm"
+    }
   }
 }
